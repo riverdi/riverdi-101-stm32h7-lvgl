@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "lvgl/lvgl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,19 +45,32 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+osThreadId_t lvglTickHandle;
+const osThreadAttr_t lvglTick_attributes = {
+  .name = "lvglTick",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 4* 1024
+};
 
+osThreadId_t lvglTimerHandle;
+const osThreadAttr_t lvglTimer_attributes = {
+  .name = "lvglTimer",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 4* 1024
+};
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128 * 4,
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+void LVGLTimer(void *argument);
+void LVGLTick(void *argument);
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -125,6 +138,8 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  lvglTickHandle = osThreadNew(LVGLTick, NULL, &lvglTick_attributes);
+  lvglTimerHandle = osThreadNew(LVGLTimer, NULL, &lvglTimer_attributes);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -155,6 +170,23 @@ void StartDefaultTask(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-
+/* LVGL timer for tasks */
+void LVGLTimer(void *argument)
+{
+  for(;;)
+  {
+    lv_timer_handler();
+    osDelay(20);
+  }
+}
+/* LVGL tick source */
+void LVGLTick(void *argument)
+{
+  for(;;)
+  {
+    lv_tick_inc(10);
+    osDelay(10);
+  }
+}
 /* USER CODE END Application */
 

@@ -103,12 +103,14 @@ int main(void)
 
 /* USER CODE BEGIN Boot_Mode_Sequence_1 */
   /* Wait until CPU2 boots and enters in stop mode or timeout*/
+#if 0
   timeout = 0xFFFF;
   while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) != RESET) && (timeout-- > 0));
   if ( timeout < 0 )
   {
   Error_Handler();
   }
+#endif
 /* USER CODE END Boot_Mode_Sequence_1 */
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -122,25 +124,30 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-/* Configure the peripherals common clocks */
+  /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
-/* USER CODE BEGIN Boot_Mode_Sequence_2 */
-/* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
-HSEM notification */
-/*HW semaphore Clock enable*/
-__HAL_RCC_HSEM_CLK_ENABLE();
-/*Take HSEM */
-HAL_HSEM_FastTake(HSEM_ID_0);
-/*Release HSEM in order to notify the CPU2(CM4)*/
-HAL_HSEM_Release(HSEM_ID_0,0);
-/* wait until CPU2 wakes up from stop mode */
-timeout = 0xFFFF;
-while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) == RESET) && (timeout-- > 0));
-if ( timeout < 0 )
-{
-Error_Handler();
-}
-/* USER CODE END Boot_Mode_Sequence_2 */
+
+  /* USER CODE BEGIN Boot_Mode_Sequence_2 */
+
+  /* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
+  HSEM notification */
+
+  /* HW semaphore Clock enable */
+  __HAL_RCC_HSEM_CLK_ENABLE();
+
+  /* take HSEM */
+  HAL_HSEM_FastTake(HSEM_ID_0);
+
+  /* release HSEM in order to notify the CPU2(CM4) */
+  HAL_HSEM_Release(HSEM_ID_0,0);
+
+  /* wait until CPU2 wakes up from stop mode */
+  timeout = 0xFFFF;
+  while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) == RESET) && (timeout-- > 0));
+  if (timeout < 0)
+    Error_Handler();
+
+  /* USER CODE END Boot_Mode_Sequence_2 */
 
   /* USER CODE BEGIN SysInit */
 
@@ -176,6 +183,28 @@ Error_Handler();
   MX_ADC1_Init();
   MX_ADC3_Init();
   /* USER CODE BEGIN 2 */
+
+  /* sdram */
+  BSP_SDRAM_SingleTest();
+
+  /* qspi memory */
+  if (CSP_QUADSPI_Init() == HAL_OK)
+    CSP_QSPI_EnableMemoryMappedMode();
+
+  /* initialize LVGL framework */
+  lv_init();
+
+  /* initialize display and touchscreen */
+  lvgl_display_init();
+  lvgl_touchscreen_init();
+
+  /* lvgl demo */
+  lv_demo_widgets();
+  //lv_demo_music();
+
+  /* pwm */
+  if (HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_1) != HAL_OK)
+    Error_Handler();
 
   /* USER CODE END 2 */
 
