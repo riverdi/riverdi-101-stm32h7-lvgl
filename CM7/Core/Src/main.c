@@ -41,7 +41,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "quadspi.h"
+#include "lvgl/lvgl.h"
+#include "lvgl/demos/lv_demos.h"
+#include "lvgl_port_touch.h"
+#include "lvgl_port_display.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
