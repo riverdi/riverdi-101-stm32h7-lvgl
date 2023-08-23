@@ -128,10 +128,9 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* Configure the peripherals common clocks */
+/* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
-
-  /* USER CODE BEGIN Boot_Mode_Sequence_2 */
+/* USER CODE BEGIN Boot_Mode_Sequence_2 */
 
   /* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
   HSEM notification */
@@ -151,7 +150,7 @@ int main(void)
   if (timeout < 0)
     Error_Handler();
 
-  /* USER CODE END Boot_Mode_Sequence_2 */
+/* USER CODE END Boot_Mode_Sequence_2 */
 
   /* USER CODE BEGIN SysInit */
 
