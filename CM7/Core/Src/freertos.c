@@ -176,7 +176,7 @@ void LVGLTimer(void *argument)
   for(;;)
   {
     lv_timer_handler();
-    osDelay(20);
+    //osDelay(20);
   }
 }
 /* LVGL tick source */
