@@ -50,6 +50,7 @@ lvgl_display_init (void)
   /* set callback for display driver */
   disp_drv.flush_cb = disp_flush;
   disp_drv.full_refresh = 0;
+  disp_drv.direct_mode = 0;
 
   /* interrupt callback for DMA2D transfer */
   hdma2d.XferCpltCallback = disp_flush_complete;
