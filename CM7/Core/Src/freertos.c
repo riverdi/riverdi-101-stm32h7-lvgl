@@ -45,18 +45,12 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-osThreadId_t lvglTickHandle;
-const osThreadAttr_t lvglTick_attributes = {
-  .name = "lvglTick",
-  .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 4* 1024
-};
 
 osThreadId_t lvglTimerHandle;
 const osThreadAttr_t lvglTimer_attributes = {
   .name = "lvglTimer",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 4* 1024
+  .stack_size = 8* 1024
 };
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
@@ -70,7 +64,6 @@ const osThreadAttr_t defaultTask_attributes = {
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 void LVGLTimer(void *argument);
-void LVGLTick(void *argument);
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -138,7 +131,6 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  lvglTickHandle = osThreadNew(LVGLTick, NULL, &lvglTick_attributes);
   lvglTimerHandle = osThreadNew(LVGLTimer, NULL, &lvglTimer_attributes);
   /* USER CODE END RTOS_THREADS */
 
@@ -176,16 +168,7 @@ void LVGLTimer(void *argument)
   for(;;)
   {
     lv_timer_handler();
-    //osDelay(20);
-  }
-}
-/* LVGL tick source */
-void LVGLTick(void *argument)
-{
-  for(;;)
-  {
-    lv_tick_inc(10);
-    osDelay(10);
+    osDelay(1);
   }
 }
 /* USER CODE END Application */

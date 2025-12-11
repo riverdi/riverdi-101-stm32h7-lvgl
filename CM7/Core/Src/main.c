@@ -98,6 +98,7 @@ int main(void)
 /* USER CODE BEGIN Boot_Mode_Sequence_0 */
   int32_t timeout;
 /* USER CODE END Boot_Mode_Sequence_0 */
+/* Enable the CPU Cache */
 
   /* Enable I-Cache---------------------------------------------------------*/
   SCB_EnableICache();
@@ -194,6 +195,9 @@ int main(void)
   if (CSP_QUADSPI_Init() == HAL_OK)
     CSP_QSPI_EnableMemoryMappedMode();
 
+  /* Call init function for freertos objects (in freertos.c) */
+  MX_FREERTOS_Init();
+
   /* initialize LVGL framework */
   lv_init();
 
@@ -201,9 +205,12 @@ int main(void)
   lvgl_display_init();
   lvgl_touchscreen_init();
 
+  lv_tick_set_cb(HAL_GetTick);
+
   /* lvgl demo */
   lv_demo_widgets();
-  //lv_demo_music();
+//  lv_demo_music();
+//  lv_demo_benchmark();
 
   /* pwm */
   if (HAL_TIM_PWM_Start(&htim15, TIM_CHANNEL_1) != HAL_OK)
@@ -212,8 +219,7 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Init scheduler */
-  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
+  osKernelInitialize();
 
   /* Start scheduler */
   osKernelStart();

@@ -1,6 +1,6 @@
 # LVGL port for the 10.1-inch Riverdi STM32 Embedded Displays (STM32H757XIH6)
 
-This repository contains the __Light and Versatile Graphics Library (LVGL)__ port for the __10.1-inch Riverdi STM32 Embedded Displays__ with *STM32H757XIH6* MCU. It's ready-to-use project template which you can easily import into *STM32CubeIDE* and *STM32CubeMX* (to reconfigure selected peripherals). This project uses latest stable LVGL release (v8.3 branch). For more info about LVGL (docs, API, tutorials) please visit [*https://lvgl.io/*](https://lvgl.io/) and [*https://github.com/lvgl/lvgl*](https://github.com/lvgl/lvgl)
+This repository contains the __Light and Versatile Graphics Library (LVGL)__ port for the __10.1-inch Riverdi STM32 Embedded Displays__ with *STM32H757XIH6* MCU. It's ready-to-use project template which you can easily import into *STM32CubeIDE* and *STM32CubeMX* (to reconfigure selected peripherals). This project uses latest stable LVGL release (v9.4 branch). For more info about LVGL (docs, API, tutorials) please visit [*https://lvgl.io/*](https://lvgl.io/) and [*https://github.com/lvgl/lvgl*](https://github.com/lvgl/lvgl)
 
 ![img1](/Docs/img_1.png)
 
@@ -72,11 +72,12 @@ git clone --recursive https://github.com/riverdi/riverdi-101-stm32h7-lvgl.git
 ```
 File => Open Projects from File System... => Directory => Select the "riverdi-101-stm32h7-lvgl/STM32CubeIde" folder => Finish
 ```
-[3] Build the project (for the best performance, please use *Release* configuration with *-Ofast* flag):
+[3] Build the project (for the best performance use Release configuration with -O2 flag):
 ```
 Project => Build all
 ```
 [4] Upload the firmware to the *Riverdi STM32 Embedded Display*
+
 
 ## TODO
 
