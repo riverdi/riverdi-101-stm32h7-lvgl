@@ -77,24 +77,38 @@ static void disp_flush (lv_display_t * display,
 	}
 	lv_display_flush_ready(disp);
 #else
-  lv_coord_t width = lv_area_get_width(area);
-  lv_coord_t height = lv_area_get_height(area);
+  lv_color_format_t cf = lv_display_get_color_format(display);
+  uint32_t px_size = lv_color_format_get_size(cf);  // RGB565 = 2
+
+  lv_area_t rot_area = *area;
+  lv_display_rotate_area(display, &rot_area);
+
+  int32_t src_w = lv_area_get_width(area);
+  int32_t src_h = lv_area_get_height(area);
+
+  uint32_t src_stride = lv_draw_buf_width_to_stride(src_w, cf);
+  uint32_t fb_stride  = lv_draw_buf_width_to_stride(MY_DISP_HOR_RES, cf);
+
+  uint8_t * fb = (uint8_t *)hltdc.LayerCfg[0].FBStartAdress;
+  fb += (rot_area.y1 * fb_stride) + (rot_area.x1 * px_size);
 
   SCB_CleanInvalidateDCache();
 
-  DMA2D->CR = 0x0U << DMA2D_CR_MODE_Pos;
-  DMA2D->FGPFCCR = DMA2D_INPUT_RGB565;
-  DMA2D->FGMAR = (uint32_t)px_map;
-  DMA2D->FGOR = 0;
-  DMA2D->OPFCCR = DMA2D_OUTPUT_RGB565;
-  DMA2D->OMAR = hltdc.LayerCfg[0].FBStartAdress + 2 * \
-                (area->y1 * MY_DISP_HOR_RES + area->x1);
-  DMA2D->OOR = MY_DISP_HOR_RES - width;
-  DMA2D->NLR = (width << DMA2D_NLR_PL_Pos) | (height << DMA2D_NLR_NL_Pos);
-  DMA2D->IFCR = 0x3FU;
-  DMA2D->CR |= DMA2D_CR_TCIE;
-  DMA2D->CR |= DMA2D_CR_START;
+  lv_display_rotation_t r = lv_display_get_rotation(display);
+
+  if(r == LV_DISPLAY_ROTATION_0) {
+      for(int32_t y = 0; y < src_h; y++) {
+          lv_memcpy(fb, px_map, src_stride);
+          px_map += src_stride;
+          fb     += fb_stride;
+      }
+  } else {
+      lv_draw_sw_rotate(px_map, fb, src_w, src_h, src_stride, fb_stride, r, cf);
+  }
+
+  lv_display_flush_ready(display);
 #endif
+
 }
 
 #ifndef DIRECT_MODE
